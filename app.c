@@ -114,6 +114,9 @@ static const motor_port_t
 #define KI8 0.0001
 #define KD8 0.065
 
+//9個目のゲイン調整を追加
+#define KP9 1.0
+
 
 float diff[2] = {0, 0};
 float integral = 0;
