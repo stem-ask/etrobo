@@ -76,10 +76,13 @@ static const motor_port_t
 #define KI0 0.0
 #define KD0 0.0
 
+#define Diameter 10
+#define Width 16
+
 //chokusinn
 #define KP1 1.6
 #define KI1 0.0
-#define KD1 0.1
+#define KD1 0.041
 
 #define KP2 3.0
 #define KI2 0.0157
@@ -89,12 +92,12 @@ static const motor_port_t
 #define KI3 0.007
 #define KD3 0.14
 //magari(soto)(最初のカーブ)
-#define KP4_1 2.1
-#define KI4_1 0.01
+#define KP4_1 1.5
+#define KI4_1 0.0105
 #define KD4_1 0.16
 //magari(soto)(2番目のカーブ)
 #define KP4_2 1.9
-#define KI4_2 0.008
+#define KI4_2 0.0085
 #define KD4_2 0.16
 
 //magari(uti)
@@ -104,7 +107,7 @@ static const motor_port_t
 //1/4rad
 #define KP6 1.9
 #define KI6 0.015
-#define KD6 0.1
+#define KD6 0.15
 //shou
 #define KP7 3.3
 #define KI7 0.0027
@@ -193,34 +196,36 @@ static void calibration(void);
 static int waitPutButton(void);
 static int waitSonar(void);
 
-static void turnDriveAngleAction(int _forward_right, int _forward_left, int _angle);
-static void turnAngleAction(int _forward, int _angle, int _turn);
-static void turnAngleActionFaster(int _forward, int _angle, int _turn, int _max, int _delay_per_DELAY_TIME);
-static void turnAngleActionSlower(int _forward, int _angle, int _turn, int _min, int _delay_per_DELAY_TIME);
-static void turnColorAction(int _forward, int _color, int _restraintAngle, int _turn);
-static void turnColorActionSlower(int _forward, int _color, int _restraintAngle, int _turn, int _min, int _delay_per_DELAY_TIME);
-static void turnAngleAction_toStraighten(int _forward, int _angle, int _turn, int _min, int _delay_per_DELAY_TIME);
-static void turnAngleActionSlower_toStraighten(int _forward, int _angle, int _turn, int _min_turn, int _delay_per_DELAY_TIME_turn, int _min_forward, int _delay_per_DELAY_TIME_forward);
-static void turnColorAction_toStraighten(int _forward, int _turn, int _color, int _restraintAngle, int _min, int _delay_per_DELAY_TIME);
-static void turnColorActionSlower_toStraighten(int _forward, int _turn, int _color, int _restraintAngle, int _min_turn, int _delay_per_DELAY_TIME_turn, int _min_forward, int _delay_per_DELAY_TIME_forward);
+static void turnDriveDistanceAction(int _forward_right, int _forward_left, int distance_cm);
+static void turnDistanceAction(int _forward, int distance_cm, int _turn);
+static void turnDistanceActionFaster(int _forward, int distance_cm, int _turn, int _max, int _delay_per_DELAY_TIME);
+static void turnDistanceActionSlower(int _forward, int distance_cm, int _turn, int _min, int _delay_per_DELAY_TIME);
+static void turnColorAction(int _forward, int _color, int _restraintDistance_cm, int _turn);
+static void turnColorActionSlower(int _forward, int _color, int _restraintDistance_cm, int _turn, int _min, int _delay_per_DELAY_TIME);
+static void turnDistanceAction_toStraighten(int _forward, int distance_cm, int _turn, int _min, int _delay_per_DELAY_TIME);
+static void turnDistanceActionSlower_toStraighten(int _forward, int distance_cm, int _turn, int _min_turn, int _delay_per_DELAY_TIME_turn, int _min_forward, int _delay_per_DELAY_TIME_forward);
+static void turnColorAction_toStraighten(int _forward, int _turn, int _color, int _restraintDistance_cm, int _min, int _delay_per_DELAY_TIME);
+static void turnColorActionSlower_toStraighten(int _forward, int _turn, int _color, int _restraintDistance_cm, int _min_turn, int _delay_per_DELAY_TIME_turn, int _min_forward, int _delay_per_DELAY_TIME_forward);
 
-static void forwardAngleAction(int _forward, int _angle);
-static void forwardAngleActionFaster(int _forward, int _angle, int _max, int _delay_per_DELAY_TIME);
-static void forwardAngleActionSlower(int _forward, int _angle, int _min, int _delay_per_DELAY_TIME);
-static void forwardColorAction(int _forward, int _color, int _restraintAngle);
-static void forwardColorActionSlower(int _forward, int _color, int _restraintAngle, int _min, int _delay_per_DELAY_TIME);
+static void forwardDistanceAction(int _forward, int distance_cm);
+static void forwardDistanceActionFaster(int _forward, int distance_cm, int _max, int _delay_per_DELAY_TIME);
+static void forwardDistanceActionSlower(int _forward, int distance_cm, int _min, int _delay_per_DELAY_TIME);
+static void forwardColorAction(int _forward, int _color, int _restraintDistance_cm);
+static void forwardColorActionSlower(int _forward, int _color, int _restraintDistance_cm, int _min, int _delay_per_DELAY_TIME);
 
 static void pidLineTraceAction(int _edge, int _forward, float p, float i, float d);
-static void pidLineTraceAngleAction(int _edge, int _forward, int _angle, float p, float i, float d);
-static void pidLineTraceAngleActionFaster(int _edge, int _forward, int _angle, int _max, int _delay_per_DELAY_TIME, float p, float i, float d);
-static void pidLineTraceAngleActionSlower(int _edge, int _forward, int _angle, int _min, int _delay_per_DELAY_TIME, float p, float i, float d);
-static void pidLineTraceColorAction(int _edge, int _forward, int _color, int _restraintAngle, float p, float i, float d);
-static void pidLineTraceColorActionSlower(int _edge, int _forward, int _color, int _restraintAngle, int _min, int _delay_per_DELAY_TIME, float p, float i, float d);
+static void pidLineTraceDistanceAction(int _edge, int _forward, int distance_cm, float p, float i, float d);
+static void pidLineTraceDistanceActionFaster(int _edge, int _forward, int distance_cm, int _max, int _delay_per_DELAY_TIME, float p, float i, float d);
+static void pidLineTraceDistanceActionSlower(int _edge, int _forward, int distance_cm, int _min, int _delay_per_DELAY_TIME, float p, float i, float d);
+static void pidLineTraceColorAction(int _edge, int _forward, int _color, int _restraintDistance_cm, float p, float i, float d);
+static void pidLineTraceColorActionSlower(int _edge, int _forward, int _color, int _restraintDistance_cm, int _min, int _delay_per_DELAY_TIME, float p, float i, float d);
 
+static void turnRatioAction(int _forward, int _ratio, int _switch);
+
+static int cm_trance_to_angle(float distance_cm);
 
 // static void tail_control(signed int angle);
 // static void backlash_cancel(signed char lpwm, signed char rpwm, int32_t *lenc, int32_t *renc);
-
 
 static void startCalibration(void)
 {
@@ -274,8 +279,6 @@ static void m_control(signed int goal)
     }
 }
 
-
-
 int onOffTrace(int forward, int _edge)
 {
     int sensorVal=ev3_color_sensor_get_reflect(color_sensor);
@@ -283,8 +286,6 @@ int onOffTrace(int forward, int _edge)
     ev3_motor_steer(left_motor,right_motor,(int)forward,(int)turnVal*_edge);
     return turnVal*_edge;
 }
-
-
 
 
 //*****************************************************************************
@@ -298,67 +299,86 @@ void lineTrace_1()
 {
     ev3_motor_set_power(arm_motor, 50);
     ev3_motor_stop(arm_motor, true);
-    pidLineTraceAngleActionFaster(-1,10,3450,70,10,KP1,KI1,KD1);
-    pidLineTraceAngleAction(-1,70,500,KP4_1,KI4_1,KD4_1);
-    pidLineTraceAngleAction(-1,70,1800,KP1,KI1,KD1);
-    pidLineTraceAngleAction(-1,70,600,KP4_2,KI4_2,KD4_2);
-    pidLineTraceAngleAction(-1,70,200,KP1,KI1,KD1);
-    turnDriveAngleAction(50,10,60);
-    pidLineTraceAngleAction(1,70,800,KP3,KI3,KD3);
+    pidLineTraceDistanceActionFaster(-1,10,300.92,70,5,KP1,KI1,KD1);
+    pidLineTraceDistanceAction(-1,70,43.61,KP4_1,KI4_1,KD4_1);
+    pidLineTraceDistanceAction(-1,70,157.0,KP1,KI1,KD1);
+    pidLineTraceDistanceAction(-1,70,52.33,KP4_2,KI4_2,KD4_2);
+    pidLineTraceDistanceAction(-1,70,17.44,KP1,KI1,KD1);
+    turnDriveDistanceAction(50,10,5.23);
+    pidLineTraceDistanceAction(1,70,69.78,KP3,KI3,KD3);
 }
 
-void lineTrace_2()
+void lineTrace_2()//doubleloop_1/4rad
 {   
     // pidLineTraceColorAction(-1,50,3,0,KP3,KI3,KD3);
     // pidLineTraceColorAction(1,50,2,0,KP3,KI3,KD3);
-    turnAngleAction(50,40,30);
-    pidLineTraceAngleAction(-1,70,1800,KP6,KI6,KD6);
-    pidLineTraceAngleAction(-1,50,300,KP6,KI6,KD6);
+    turnDistanceAction(50,3.49,30);
+    pidLineTraceDistanceAction(-1,70,157.0,KP6,KI6,KD6);
+    pidLineTraceDistanceAction(-1,50,26.17,KP6,KI6,KD6);
     ev3_speaker_play_tone(240, 100);
 }
 
 void lineTrace_3()//doubleloop_small
 {
-    // turnAngleAction(50,80,-30);
+    // turnDistanceAction(50,80,-30);
     pidLineTraceColorAction(-1,70,3,0,KP7,KI7,KD7);
 }
 
 void lineTrace_4() /*doubleloop_last*/
 {
     pidLineTraceColorAction(-1,40,2,0,KP7,KI7,KD7);
-    turnDriveAngleAction(40,10,50);
-    pidLineTraceAngleActionSlower(1,50,1450,20,60,KP3,KI3,KD3);
-    turnColorActionSlower_toStraighten(50,-3,2,800,0,40,25,5);
+    turnDriveDistanceAction(40,10,4.36);
+    pidLineTraceDistanceActionSlower(1,50,126.47,20,60,KP3,KI3,KD3);
+    turnColorActionSlower_toStraighten(50,-3,2,69.78,0,40,25,5);
 }
 
 void mission_1()
 {
-    pidLineTraceColorActionSlower(-1,30,5,0,5,10,KP1,KI1,KD1);
-    // turnDriveAngleAction(50,10,90);
-    turnColorActionSlower_toStraighten(30,-20,2,10,0,30,20,20);
+    pidLineTraceColorActionSlower(-1,20,5,0,5,10,KP1,KI1,KD1);
+    // turnDriveDistanceAction(50,10,90);
+    turnColorActionSlower_toStraighten(30,-30,2,0.87,0,20,20,60);
 }
+// void mission_2()
+// {
+    
+// }
 // void lineTrace_5()
 // {
 
 //     pidLineTraceColorAction(-1,45,2,0,KP7,KI7,KD7);
-//     pidLineTraceAngleAction(-1,50,1600,KP3,KI3,KD3);
+//     pidLineTraceDistanceAction(-1,50,1600,KP3,KI3,KD3);
 // }
 
 // void lineTrace_6()
 // {
     
 //     pidLineTraceColorAction(-1,40,2,0,KP1,KI1,KD1);
-//     pidLineTraceAngleAction(-1,50,2500,KP7,KI7,KD7);
+//     pidLineTraceDistanceAction(-1,50,2500,KP7,KI7,KD7);
 
 // }
 
 // void lineTrace_7()
 // {
-//     pidLineTraceAngleAction(-1,50,2500,KP7,KI7,KD7);
+//     pidLineTraceDistanceAction(-1,50,2500,KP7,KI7,KD7);
 //     ev3_speaker_play_tone(240, 100);
 //     pidLineTraceColorAction(-1,40,5,0,KP7,KI7,KD7);
 
 // }
+void lineTrace()
+{
+    pidLineTraceDistanceActionFaster(-1,10,5950,70,10,KP1,KI1,KD1);
+    ev3_speaker_play_tone(440, 100);
+    pidLineTraceColorActionSlower(-1, 80, 3, 300,30, 8, KP6, KI6, KD6);
+    turnDriveDistanceAction(50, 8, 500);
+}
+
+void _lineTrace()
+{
+    pidLineTraceDistanceAction(-1,50,3000,KP1,KI1,KD1);
+    pidLineTraceDistanceAction(-1,50,750,KP4_1,KI4_1,KD4_1);
+    pidLineTraceDistanceAction(-1,50,1900,KP1,KI1,KD1);
+    pidLineTraceDistanceAction(-1,50,750,KP4_1,KI4_1,KD4_1);
+}
 
 /* メインタスク */
 void main_task(intptr_t unused)
@@ -431,13 +451,13 @@ void main_task(intptr_t unused)
     // /* スタート待機 */
     // while (1)
     // {
-    //     // tail_control(TAIL_ANGLE_STAND_UP); /* 完全停止用角度に制御 */
-    //     // if (bt_cmd == 1)
-    //     // {
-    //     //     break; /* リモートスタート */
-    //     // }
-    //     waitPutButton();
-    //     ev3_speaker_play_tone(640, 100);
+        // // tail_control(TAIL_ANGLE_STAND_UP); /* 完全停止用角度に制御 */
+        // // if (bt_cmd == 1)
+        // // {
+        // //     break; /* リモートスタート */
+        // // }
+        // waitPutButton();
+        // ev3_speaker_play_tone(640, 100);
     //     tslp_tsk(10 * 1000U); /* 10msecウェイト */
     //     break;
     // }
@@ -480,10 +500,16 @@ void main_task(intptr_t unused)
     //     printf("   %d:%d:%d   ",rgb_val.r,rgb_val.g,rgb_val.b);
     //     _log("debug");
     // }
-
-    
-    // testRun(-1,1200, 60);
-    // lineTrace_0(-1,30,500);
+    // _lineTrace();
+    // lineTrace();
+    pidLineTraceDistanceActionFaster(-1, 20, 30, 60, 10, KP1, KI1, KD1);
+    ev3_speaker_play_tone(440, 100);
+    testRun(-1,300, 60);
+    while(1)
+    {
+        drive(0,0);
+    }
+    // lineTrace_0(-1,30,200);
     lineTrace_1();//start
     lineTrace_2();//1/4rad
     lineTrace_3();//doubleloop_small
@@ -493,7 +519,7 @@ void main_task(intptr_t unused)
     // lineTrace_7();
     ev3_speaker_play_tone(140, 100);
     //missionzone
-    // mission_1();
+    mission_1();
     //     else if (ao_count == 1)
     //     {
     //         if (get_rgb() == 3 && right_wheel[0]-right_wheel[1]>200)
@@ -1665,8 +1691,8 @@ static int getRgb(void)
     {
         color_et = 4; /*緑*/
     }
-    if (ret >= 60 && get >= 10 && bet >= 0 &&
-        ret <= 85 && get <= 40 && bet <= 35)
+    if (ret >= 60 && get >= 20 && bet >= 0 &&
+        ret <= 85 && get <= 55 && bet <= 35)
     {
         color_et = 5; /*赤*/
     }
@@ -1762,13 +1788,14 @@ static int waitSonar(void)
     return 1;
 }
 //**********************************************************************************************************************************************************
-// 関数名　:　turnDriveAngleAction
-// 引数　:　右ホイール速度, 左ホイール速度,走行角度
+// 関数名　:　turnDriveDistanceAction
+// 引数　:　右ホイール速度, 左ホイール速度,走行距離[cm]
 // 返り値　:　なし
 // 概要　:　左右のモーターパワーを設定可能
 //**********************************************************************************************************************************************************
-static void turnDriveAngleAction(int _forward_right, int _forward_left, int _angle)
+static void turnDriveDistanceAction(int _forward_right, int _forward_left, int distance_cm)
 {
+    int _angle=cm_trance_to_angle(distance_cm);
     _wheelCountTemp = (ev3_motor_get_counts(right_motor) + ev3_motor_get_counts(left_motor)) / 2.0;
     while ((ev3_motor_get_counts(right_motor) + ev3_motor_get_counts(left_motor)) / 2.0 < _wheelCountTemp + _angle)
     {
@@ -1779,13 +1806,14 @@ static void turnDriveAngleAction(int _forward_right, int _forward_left, int _ang
 }
 
 //**********************************************************************************************************************************************************
-// 関数名　:　turnAngleAction
-// 引数　:　速度, 走行角度, 左右モーターパワー比
+// 関数名　:　turnDistanceAction
+// 引数　:　速度, 走行距離[cm], 左右モーターパワー比
 // 返り値　:　なし
-// 概要　:　角度曲進する（モーターの個体差は考えない）
+// 概要　:　曲進する（モーターの個体差は考えない）
 //**********************************************************************************************************************************************************
-static void turnAngleAction(int _forward, int _angle, int _turn)
+static void turnDistanceAction(int _forward, int distance_cm, int _turn)
 {
+    int _angle=cm_trance_to_angle(distance_cm);
     _wheelCountTemp = (ev3_motor_get_counts(right_motor) + ev3_motor_get_counts(left_motor)) / 2.0;
     while ((ev3_motor_get_counts(right_motor) + ev3_motor_get_counts(left_motor)) / 2.0 < _wheelCountTemp + _angle)
     {
@@ -1795,13 +1823,14 @@ static void turnAngleAction(int _forward, int _angle, int _turn)
 }
 
 //**********************************************************************************************************************************************************
-// 関数名　:　turnAngleActionFaster
-// 引数　:　速度, 走行角度, 左右モーターパワー比, 増加速度上限, 増加率
+// 関数名　:　turnDistanceActionFaster
+// 引数　:　速度, 走行距離[cm], 左右モーターパワー比, 増加速度上限, 増加率
 // 返り値　:　なし
-// 概要　:　加速しつつ角度曲進する（モーターの個体差は考えない）
+// 概要　:　加速しつつ曲進する（モーターの個体差は考えない）
 //**********************************************************************************************************************************************************
-static void turnAngleActionFaster(int _forward, int _angle, int _turn, int _max, int _delay_per_DELAY_TIME)
+static void turnDistanceActionFaster(int _forward, int distance_cm, int _turn, int _max, int _delay_per_DELAY_TIME)
 {
+    int _angle=cm_trance_to_angle(distance_cm);
     _wheelCountTemp = (ev3_motor_get_counts(right_motor) + ev3_motor_get_counts(left_motor)) / 2.0;
     static int _delay=0;
     while ((ev3_motor_get_counts(right_motor) + ev3_motor_get_counts(left_motor)) / 2.0 < _wheelCountTemp + _angle)
@@ -1820,13 +1849,14 @@ static void turnAngleActionFaster(int _forward, int _angle, int _turn, int _max,
 }
 
 //**********************************************************************************************************************************************************
-// 関数名　:　turnAngleActionSlower
-// 引数　:　速度, 走行角度, 左右モーターパワー比, 減少速度下限, 減少率
+// 関数名　:　turnDistanceActionSlower
+// 引数　:　速度, 走行距離[cm], 左右モーターパワー比, 減少速度下限, 減少率
 // 返り値　:　なし
-// 概要　:　減速しつつ角度曲進する（モーターの個体差は考えない）
+// 概要　:　減速しつつ曲進する（モーターの個体差は考えない）
 //**********************************************************************************************************************************************************
-static void turnAngleActionSlower(int _forward, int _angle, int _turn, int _min, int _delay_per_DELAY_TIME)
+static void turnDistanceActionSlower(int _forward, int distance_cm, int _turn, int _min, int _delay_per_DELAY_TIME)
 {
+    int _angle=cm_trance_to_angle(distance_cm);
     _wheelCountTemp = (ev3_motor_get_counts(right_motor) + ev3_motor_get_counts(left_motor)) / 2.0;
     static int _delay=0;
     while ((ev3_motor_get_counts(right_motor) + ev3_motor_get_counts(left_motor)) / 2.0 < _wheelCountTemp + _angle)
@@ -1846,14 +1876,16 @@ static void turnAngleActionSlower(int _forward, int _angle, int _turn, int _min,
 
 //**********************************************************************************************************************************************************
 // 関数名　:　turnColorAction
-// 引数　:　速度, 指定色, 読み取り停止角度距離
+// 引数　:　速度, 指定色, 読み取り停止距離[cm]
 // 返り値　:　なし
-// 概要　:　指定色検知まで角度曲進する（モーターの個体差は考えない）
+// 概要　:　指定色検知まで曲進する（モーターの個体差は考えない）
 //**********************************************************************************************************************************************************
-static void turnColorAction(int _forward, int _turn, int _color, int _restraintAngle)
+static void turnColorAction(int _forward, int _turn, int _color, int _restraintDistance_cm)
 {
+    int _restraintAngle=cm_trance_to_angle(_restraintDistance_cm);
     _wheelCountTemp = (ev3_motor_get_counts(right_motor) + ev3_motor_get_counts(left_motor)) / 2.0;
-    while (getRgb() != _color || (ev3_motor_get_counts(right_motor) + ev3_motor_get_counts(left_motor)) / 2.0 < _wheelCountTemp + _restraintAngle)
+    turnDistanceAction(_forward, _restraintAngle, _turn);
+    while (getRgb() != _color)
     {
         ev3_motor_steer(left_motor,right_motor,(int)_forward,(int)_turn);
         tslp_tsk(DELAY_TIME); 
@@ -1863,15 +1895,16 @@ static void turnColorAction(int _forward, int _turn, int _color, int _restraintA
 
 //**********************************************************************************************************************************************************
 // 関数名　:　turnColorActionSlower
-// 引数　:　速度, 指定色, 読み取り停止角度距離, 減少速度下限, 減少率
+// 引数　:　速度, 指定色, 読み取り停止距離[cm], 減少速度下限, 減少率
 // 返り値　:　なし
-// 概要　:　減速しつつ指定色検知まで角度曲進する（モーターの個体差は考えない）
+// 概要　:　減速しつつ指定色検知まで曲進する（モーターの個体差は考えない）
 //**********************************************************************************************************************************************************
-static void turnColorActionSlower(int _forward, int _turn, int _color, int _restraintAngle, int _min, int _delay_per_DELAY_TIME)
+static void turnColorActionSlower(int _forward, int _turn, int _color, int _restraintDistance_cm, int _min, int _delay_per_DELAY_TIME)
 {
+    int _restraintAngle=cm_trance_to_angle(_restraintDistance_cm);
     _wheelCountTemp = (ev3_motor_get_counts(right_motor) + ev3_motor_get_counts(left_motor)) / 2.0;
     static int _delay=0;
-    turnAngleAction(_forward, _restraintAngle, _turn);
+    turnDistanceAction(_forward, _restraintAngle, _turn);
     while (getRgb() != _color)
     {
         ev3_motor_steer(left_motor,right_motor,(int)_forward,(int)_turn);
@@ -1889,13 +1922,14 @@ static void turnColorActionSlower(int _forward, int _turn, int _color, int _rest
 }
 
 //**********************************************************************************************************************************************************
-// 関数名　:　turnAngleAction_toStraighten
-// 引数　:　速度, 走行角度, 左右モーターパワー比, 減少角度下限, 減少率
+// 関数名　:　turnDistanceAction_toStraighten
+// 引数　:　速度, 走行距離[cm], 左右モーターパワー比, 減少角度下限, 減少率
 // 返り値　:　なし
-// 概要　:　角度曲進の際に曲進角を徐々に緩める
+// 概要　:　曲進の際に曲進角を徐々に緩める
 //**********************************************************************************************************************************************************
-static void turnAngleAction_toStraighten(int _forward, int _angle, int _turn, int _min, int _delay_per_DELAY_TIME)
+static void turnDistanceAction_toStraighten(int _forward, int distance_cm, int _turn, int _min, int _delay_per_DELAY_TIME)
 {
+    int _angle=cm_trance_to_angle(distance_cm);
     _wheelCountTemp = (ev3_motor_get_counts(right_motor) + ev3_motor_get_counts(left_motor)) / 2.0;
     static int _delay=0;
     static int sign;
@@ -1928,13 +1962,14 @@ static void turnAngleAction_toStraighten(int _forward, int _angle, int _turn, in
 }
 
 //**********************************************************************************************************************************************************
-// 関数名　:　turnAngleActionSlower_toStraighten
-// 引数　:　速度, 走行角度, 左右モーターパワー比, 減少角度下限, 角度値減少率, 減少速度下限, 速度値減少率
+// 関数名　:　turnDistanceActionSlower_toStraighten
+// 引数　:　速度, 走行距離[cm], 左右モーターパワー比, 減少角度下限, 角度値減少率, 減少速度下限, 速度値減少率
 // 返り値　:　なし
-// 概要　:　減速しつつ角度曲進する（モーターの個体差は考えない）
+// 概要　:　減速しつつ曲進する（モーターの個体差は考えない）
 //**********************************************************************************************************************************************************
-static void turnAngleActionSlower_toStraighten(int _forward, int _angle, int _turn, int _min_turn, int _delay_per_DELAY_TIME_turn, int _min_forward, int _delay_per_DELAY_TIME_forward)
+static void turnDistanceActionSlower_toStraighten(int _forward, int distance_cm, int _turn, int _min_turn, int _delay_per_DELAY_TIME_turn, int _min_forward, int _delay_per_DELAY_TIME_forward)
 {
+    int _angle=cm_trance_to_angle(distance_cm);
     _wheelCountTemp = (ev3_motor_get_counts(right_motor) + ev3_motor_get_counts(left_motor)) / 2.0;
     static int _delay=0;
     static int sign;
@@ -1974,12 +2009,13 @@ static void turnAngleActionSlower_toStraighten(int _forward, int _angle, int _tu
 
 //**********************************************************************************************************************************************************
 // 関数名　:　turnColorAction_toStraighten
-// 引数　:　速度, 左右モーターパワー比, 指定色, 読み取り停止角度距離, 減少角度下限, 角度値減少率
+// 引数　:　速度, 左右モーターパワー比, 指定色, 読み取り停止距離[cm], 減少角度下限, 角度値減少率
 // 返り値　:　なし
-// 概要　:　減速しつつ角度曲進する（モーターの個体差は考えない）
+// 概要　:　減速しつつ曲進する（モーターの個体差は考えない）
 //**********************************************************************************************************************************************************
-static void turnColorAction_toStraighten(int _forward, int _turn, int _color, int _restraintAngle, int _min, int _delay_per_DELAY_TIME)
+static void turnColorAction_toStraighten(int _forward, int _turn, int _color, int _restraintDistance_cm, int _min, int _delay_per_DELAY_TIME)
 {
+    int _restraintAngle=cm_trance_to_angle(_restraintDistance_cm);
     _wheelCountTemp = (ev3_motor_get_counts(right_motor) + ev3_motor_get_counts(left_motor)) / 2.0;
     static int _delay=0;
     static int sign;
@@ -1995,7 +2031,19 @@ static void turnColorAction_toStraighten(int _forward, int _turn, int _color, in
     {
         sign=0;
     }
-    turnAngleAction(_forward, _restraintAngle, _turn);
+    while ((ev3_motor_get_counts(right_motor) + ev3_motor_get_counts(left_motor)) / 2.0 < _wheelCountTemp + _restraintAngle)
+    {
+        ev3_motor_steer(left_motor,right_motor,(int)_forward,(int)_turn);
+        _delay++;
+        if (_delay%_delay_per_DELAY_TIME==0)
+        {
+            if (abs(_min) < abs(_turn))
+            {
+                _turn-=sign;
+            }
+        }
+        tslp_tsk(DELAY_TIME); 
+    }    
     while (getRgb() != _color || (ev3_motor_get_counts(right_motor) + ev3_motor_get_counts(left_motor)) / 2.0 < _wheelCountTemp + _restraintAngle)
     {
         ev3_motor_steer(left_motor,right_motor,(int)_forward,(int)_turn);
@@ -2009,16 +2057,18 @@ static void turnColorAction_toStraighten(int _forward, int _turn, int _color, in
         }
         tslp_tsk(DELAY_TIME); 
     }
+    ev3_speaker_play_tone(440, 100);   
 }
 
 //**********************************************************************************************************************************************************
 // 関数名　:　turnColorActionSlower_toStraighten
-// 引数　:　速度, 左右モーターパワー比, 指定色, 読み取り停止角度距離, 減少角度下限, 角度値減少率, 減少速度下限, 速度値減少率
+// 引数　:　速度, 左右モーターパワー比, 指定色, 読み取り停止距離[cm], 減少角度下限, 角度値減少率, 減少速度下限, 速度値減少率
 // 返り値　:　なし
-// 概要　:　減速しつつ角度曲進する（モーターの個体差は考えない）
+// 概要　:　減速しつつ曲進する（モーターの個体差は考えない）
 //**********************************************************************************************************************************************************
-static void turnColorActionSlower_toStraighten(int _forward, int _turn, int _color, int _restraintAngle, int _min_turn, int _delay_per_DELAY_TIME_turn, int _min_forward, int _delay_per_DELAY_TIME_forward)
+static void turnColorActionSlower_toStraighten(int _forward, int _turn, int _color, int _restraintDistance_cm, int _min_turn, int _delay_per_DELAY_TIME_turn, int _min_forward, int _delay_per_DELAY_TIME_forward)
 {
+    int _restraintAngle=cm_trance_to_angle(_restraintDistance_cm);
     _wheelCountTemp = (ev3_motor_get_counts(right_motor) + ev3_motor_get_counts(left_motor)) / 2.0;
     static int _delay=0;
     static int sign=0;
@@ -2030,8 +2080,7 @@ static void turnColorActionSlower_toStraighten(int _forward, int _turn, int _col
     {
         sign=1;
     }
-    turnAngleAction(_forward, _restraintAngle, _turn);
-    while (getRgb() != _color)
+    while ((ev3_motor_get_counts(right_motor) + ev3_motor_get_counts(left_motor)) / 2.0 < _wheelCountTemp + _restraintAngle)
     {
         ev3_motor_steer(left_motor,right_motor,(int)_forward,(int)_turn);
         _delay++;
@@ -2040,7 +2089,6 @@ static void turnColorActionSlower_toStraighten(int _forward, int _turn, int _col
             if (abs(_min_turn) < abs(_turn))
             {
                 _turn-=sign;
-                printf("%d\n",_turn);
             }
         }
         if (_delay%_delay_per_DELAY_TIME_forward==0)
@@ -2052,16 +2100,38 @@ static void turnColorActionSlower_toStraighten(int _forward, int _turn, int _col
         }
         tslp_tsk(DELAY_TIME); 
     }
+    while (getRgb() != _color)
+    {
+        ev3_motor_steer(left_motor,right_motor,(int)_forward,(int)_turn);
+        _delay++;
+        if (_delay%_delay_per_DELAY_TIME_turn==0)
+        {
+            if (abs(_min_turn) < abs(_turn))
+            {
+                _turn-=sign;
+            }
+        }
+        if (_delay%_delay_per_DELAY_TIME_forward==0)
+        {
+            if (_min_forward < _forward)
+            {
+                _forward-=1;
+            }
+        }
+        tslp_tsk(DELAY_TIME); 
+    }
+    ev3_speaker_play_tone(440, 100);   
 }
 
 //**********************************************************************************************************************************************************
-// 関数名　:　forwardAngleAction
-// 引数　:　速度, 走行角度
+// 関数名　:　forwardDistanceAction
+// 引数　:　速度, 走行距離[cm]
 // 返り値　:　なし
-// 概要　:　角度直進する（モーターの個体差は考えない）
+// 概要　:　直進する（モーターの個体差は考えない）
 //**********************************************************************************************************************************************************
-static void forwardAngleAction(int _forward, int _angle)
+static void forwardDistanceAction(int _forward, int distance_cm)
 {
+    int _angle=cm_trance_to_angle(distance_cm);
     _wheelCountTemp = (ev3_motor_get_counts(right_motor) + ev3_motor_get_counts(left_motor)) / 2.0;
     while ((ev3_motor_get_counts(right_motor) + ev3_motor_get_counts(left_motor)) / 2.0 < _wheelCountTemp + _angle)
     {
@@ -2072,13 +2142,14 @@ static void forwardAngleAction(int _forward, int _angle)
 }
 
 //**********************************************************************************************************************************************************
-// 関数名　:　forwardAngleActionFaster
-// 引数　:　速度, 走行角度, 増加速度上限, 増加率
+// 関数名　:　forwardDistanceActionFaster
+// 引数　:　速度, 走行距離[cm], 増加速度上限, 増加率
 // 返り値　:　なし
-// 概要　:　加速しつつ角度直進する（モーターの個体差は考えない）
+// 概要　:　加速しつつ直進する（モーターの個体差は考えない）
 //**********************************************************************************************************************************************************
-static void forwardAngleActionFaster(int _forward, int _angle, int _max, int _delay_per_DELAY_TIME)
+static void forwardDistanceActionFaster(int _forward, int distance_cm, int _max, int _delay_per_DELAY_TIME)
 {
+    int _angle=cm_trance_to_angle(distance_cm);
     _wheelCountTemp = (ev3_motor_get_counts(right_motor) + ev3_motor_get_counts(left_motor)) / 2.0;
     static int _delay=0;
     while ((ev3_motor_get_counts(right_motor) + ev3_motor_get_counts(left_motor)) / 2.0 < _wheelCountTemp + _angle)
@@ -2097,13 +2168,14 @@ static void forwardAngleActionFaster(int _forward, int _angle, int _max, int _de
     }
 }
 //**********************************************************************************************************************************************************
-// 関数名　:　forwardAngleActionSlower
-// 引数　:　速度, 移動角度, 減少速度下限, 減少率
+// 関数名　:　forwardDistanceActionSlower
+// 引数　:　速度, 移動距離[cm], 減少速度下限, 減少率
 // 返り値　:　なし
-// 概要　:　減速しつつ角度直進する（モーターの個体差は考えない）
+// 概要　:　減速しつつ直進する（モーターの個体差は考えない）
 //**********************************************************************************************************************************************************
-static void forwardAngleActionSlower(int _forward, int _angle, int _min, int _delay_per_DELAY_TIME)
+static void forwardDistanceActionSlower(int _forward, int distance_cm, int _min, int _delay_per_DELAY_TIME)
 {
+    int _angle=cm_trance_to_angle(distance_cm);
     _wheelCountTemp = (ev3_motor_get_counts(right_motor) + ev3_motor_get_counts(left_motor)) / 2.0;
     static int _delay=0;
     while ((ev3_motor_get_counts(right_motor) + ev3_motor_get_counts(left_motor)) / 2.0 < _wheelCountTemp + _angle)
@@ -2124,14 +2196,15 @@ static void forwardAngleActionSlower(int _forward, int _angle, int _min, int _de
 
 //**********************************************************************************************************************************************************
 // 関数名　:　forwardColorAction
-// 引数　:　速度, 指定色, 読み取り停止角度距離
+// 引数　:　速度, 指定色, 読み取り停止距離[cm]
 // 返り値　:　なし
 // 概要　:　指定色検知まで直進する（モーターの個体差は考えない）
 //**********************************************************************************************************************************************************
-static void forwardColorAction(int _forward, int _color, int _restraintAngle)
+static void forwardColorAction(int _forward, int _color, int _restraintDistance_cm)
 {
+    int _restraintAngle=cm_trance_to_angle(_restraintDistance_cm);
     _wheelCountTemp = (ev3_motor_get_counts(right_motor) + ev3_motor_get_counts(left_motor)) / 2.0;
-    forwardAngleAction(_forward, _restraintAngle);
+    forwardDistanceAction(_forward, _restraintAngle);
     while (getRgb() != _color)
     {
         ev3_motor_set_power(right_motor, _forward/LR_MOTOR_RATIO);
@@ -2143,15 +2216,21 @@ static void forwardColorAction(int _forward, int _color, int _restraintAngle)
 
 //**********************************************************************************************************************************************************
 // 関数名　:　forwardColorActionSlower
-// 引数　:　速度, 指定色, 読み取り停止角度距離, 減少速度下限, 減少率
+// 引数　:　速度, 指定色, 読み取り停止距離[cm], 減少速度下限, 減少率
 // 返り値　:　なし
 // 概要　:　減速しつつ指定色検知まで直進する（モーターの個体差は考えない）
 //**********************************************************************************************************************************************************
-static void forwardColorActionSlower(int _forward, int _color, int _restraintAngle, int _min, int _delay_per_DELAY_TIME)
+static void forwardColorActionSlower(int _forward, int _color, int _restraintDistance_cm, int _min, int _delay_per_DELAY_TIME)
 {
+    int _restraintAngle=cm_trance_to_angle(_restraintDistance_cm);
     _wheelCountTemp = (ev3_motor_get_counts(right_motor) + ev3_motor_get_counts(left_motor)) / 2.0;
     static int _delay=0;
-    forwardAngleAction(_forward, _restraintAngle);
+    while ((ev3_motor_get_counts(right_motor) + ev3_motor_get_counts(left_motor)) / 2.0 < _wheelCountTemp + _restraintAngle)
+    {
+        ev3_motor_set_power(right_motor, _forward/LR_MOTOR_RATIO);
+        ev3_motor_set_power(left_motor, _forward*LR_MOTOR_RATIO);
+        tslp_tsk(DELAY_TIME); 
+    }
     while (getRgb() != _color)
     {
         ev3_motor_set_power(right_motor, _forward/LR_MOTOR_RATIO);
@@ -2182,13 +2261,14 @@ static void pidLineTraceAction(int _edge, int _forward, float p, float i, float 
 }
 
 //**********************************************************************************************************************************************************
-// 関数名　:　pidLineTraceAngleAction
-// 引数　:　左右トレース選択, 速度, 走行角度, pGain, iGain, dGain
+// 関数名　:　pidLineTraceDistanceAction
+// 引数　:　左右トレース選択, 速度, 走行距離[cm], pGain, iGain, dGain
 // 返り値　:　なし
-// 概要　:　PID制御で角度走行を行う
+// 概要　:　PID制御で走行を行う
 //**********************************************************************************************************************************************************
-static void pidLineTraceAngleAction(int _edge, int _forward, int _angle, float p, float i, float d)
+static void pidLineTraceDistanceAction(int _edge, int _forward, int distance_cm, float p, float i, float d)
 {
+    int _angle=cm_trance_to_angle(distance_cm);
     _wheelCountTemp = (ev3_motor_get_counts(right_motor) + ev3_motor_get_counts(left_motor)) / 2.0;
     while ((ev3_motor_get_counts(right_motor) + ev3_motor_get_counts(left_motor)) / 2.0 < _wheelCountTemp + _angle)
     {
@@ -2199,13 +2279,14 @@ static void pidLineTraceAngleAction(int _edge, int _forward, int _angle, float p
 }
 
 //**********************************************************************************************************************************************************
-// 関数名　:　pidLineTraceAngleActionFaster
-// 引数　:　左右トレース選択, 速度, 走行角度, 増加速度上限, 増加率, pGain, iGain, dGain
+// 関数名　:　pidLineTraceDistanceActionFaster
+// 引数　:　左右トレース選択, 速度, 走行距離[cm], 増加速度上限, 増加率, pGain, iGain, dGain
 // 返り値　:　なし
-// 概要　:　加速しつつPID制御で角度走行を行う
+// 概要　:　加速しつつPID制御で走行を行う
 //**********************************************************************************************************************************************************
-static void pidLineTraceAngleActionFaster(int _edge, int _forward, int _angle, int _max, int _delay_per_DELAY_TIME, float p, float i, float d)
+static void pidLineTraceDistanceActionFaster(int _edge, int _forward, int distance_cm, int _max, int _delay_per_DELAY_TIME, float p, float i, float d)
 {
+    int _angle=cm_trance_to_angle(distance_cm);
     _wheelCountTemp = (ev3_motor_get_counts(right_motor) + ev3_motor_get_counts(left_motor)) / 2.0;
     static int _delay=0;
     while ((ev3_motor_get_counts(right_motor) + ev3_motor_get_counts(left_motor)) / 2.0 < _wheelCountTemp + _angle)
@@ -2225,13 +2306,14 @@ static void pidLineTraceAngleActionFaster(int _edge, int _forward, int _angle, i
 }
 
 //**********************************************************************************************************************************************************
-// 関数名　:　pidLineTraceAngleActionSlower
-// 引数　:　左右トレース選択, 速度, 走行角度, 減少速度下限, 減少率, pGain, iGain, dGain
+// 関数名　:　pidLineTraceDistanceActionSlower
+// 引数　:　左右トレース選択, 速度, 走行距離[cm], 減少速度下限, 減少率, pGain, iGain, dGain
 // 返り値　:　なし
-// 概要　:　減速しつつPID制御で角度走行を行う
+// 概要　:　減速しつつPID制御で走行を行う
 //**********************************************************************************************************************************************************
-static void pidLineTraceAngleActionSlower(int _edge, int _forward, int _angle, int _min, int _delay_per_DELAY_TIME, float p, float i, float d)
+static void pidLineTraceDistanceActionSlower(int _edge, int _forward, int distance_cm, int _min, int _delay_per_DELAY_TIME, float p, float i, float d)
 {
+    int _angle=cm_trance_to_angle(distance_cm);
     _wheelCountTemp = (ev3_motor_get_counts(right_motor) + ev3_motor_get_counts(left_motor)) / 2.0;
     static int _delay=0;
     while ((ev3_motor_get_counts(right_motor) + ev3_motor_get_counts(left_motor)) / 2.0 < _wheelCountTemp + _angle)
@@ -2252,36 +2334,52 @@ static void pidLineTraceAngleActionSlower(int _edge, int _forward, int _angle, i
 
 //**********************************************************************************************************************************************************
 // 関数名　:　pidLineTraceColorAction
-// 引数　:　左右トレース選択, 速度, 指定色, 読み取り停止角度距離, pGain, iGain, dGain
+// 引数　:　左右トレース選択, 速度, 指定色, 読み取り停止距離[cm], pGain, iGain, dGain
 // 返り値　:　なし
 // 概要　:　指定色検知までPID制御走行を行う
 //**********************************************************************************************************************************************************
-static void pidLineTraceColorAction(int _edge, int _forward, int _color, int _restraintAngle, float p, float i, float d)
+static void pidLineTraceColorAction(int _edge, int _forward, int _color, int _restraintDistance_cm, float p, float i, float d)
 {
-    pidLineTraceAngleAction(_edge, _forward, _restraintAngle, p, i, d);
-    CENTER-=7;
+    int _restraintAngle=cm_trance_to_angle(_restraintDistance_cm);
+    pidLineTraceDistanceAction(_edge, _forward, _restraintAngle, p, i, d);
+    CENTER-=5;
     while (getRgb() != _color)
     {
-        pidLineTraceAngleAction(_edge, _forward, 20, p, i, d);
+        pidLineTraceDistanceAction(_edge, _forward, 20, p, i, d);
     }
-    CENTER+=7;
+    CENTER+=5;
     ev3_speaker_play_tone(440, 100);
 }
 
 //**********************************************************************************************************************************************************
 // 関数名　:　pidLineTraceColorActionSlower
-// 引数　:　左右トレース選択, 速度, 指定色, 読み取り停止角度距離, 減少速度下限, 減少率, pGain, iGain, dGain
+// 引数　:　左右トレース選択, 速度, 指定色, 読み取り停止距離[cm], 減少速度下限, 減少率, pGain, iGain, dGain
 // 返り値　:　なし
 // 概要　:　減速しつつ指定色検知までPID制御走行を行う
 //**********************************************************************************************************************************************************
-static void pidLineTraceColorActionSlower(int _edge, int _forward, int _color, int _restraintAngle, int _min, int _delay_per_DELAY_TIME, float p, float i, float d)
+static void pidLineTraceColorActionSlower(int _edge, int _forward, int _color, int _restraintDistance_cm, int _min, int _delay_per_DELAY_TIME, float p, float i, float d)
 {
-    pidLineTraceAngleAction(_edge, _forward, _restraintAngle, p, i, d);
+    int _restraintAngle=cm_trance_to_angle(_restraintDistance_cm);
+    pidLineTraceDistanceAction(_edge, _forward, _restraintAngle, p, i, d);
     static int _delay=0;
-    CENTER-=7;
+    while ((ev3_motor_get_counts(right_motor) + ev3_motor_get_counts(left_motor)) / 2.0 < _wheelCountTemp + _restraintAngle)
+    {
+        _refrect = ev3_color_sensor_get_reflect(color_sensor);
+        pid( _edge, _refrect, _forward, p, i, d, CENTER);
+        _delay++;
+        if (_delay%_delay_per_DELAY_TIME==0)
+        {
+            if (_min < _forward)
+            {
+                _forward-=1;
+            }
+        }
+        tslp_tsk(DELAY_TIME);
+    }
+    CENTER-=5;
     while (getRgb() != _color)
     {
-        pidLineTraceAngleAction(_edge, _forward, 20, p, i, d);
+        pidLineTraceDistanceAction(_edge, _forward, 20, p, i, d);
         _delay++;
         if (_delay%_delay_per_DELAY_TIME==0)
         {
@@ -2291,6 +2389,24 @@ static void pidLineTraceColorActionSlower(int _edge, int _forward, int _color, i
             }
         }
     }
-    CENTER+=7;
+    CENTER+=5;
     ev3_speaker_play_tone(440, 100);
+}
+
+//**********************************************************************************************************************************************************
+// 関数名　:　turnRatioAction
+// 引数　:　速度, 目的角度, 左右回転方向選択(右=1, 左=-1) 
+// 返り値　:　なし
+// 概要　: 引数で渡された速度で目的角度まで車体を信地回転させる
+//**********************************************************************************************************************************************************
+static void turnRatioAction(int _forward, int _ratio, int _switch)
+{   
+    static float _angle;
+    _angle=(((2.0*Width)/(float)Diameter))/2;//((2*(float)_width*3.14)*((float)_ratio/360))/(((float)_diameter*3.14)/360)
+    turnDistanceAction(_forward, _angle, 50*_switch);
+}
+
+static int cm_trance_to_angle(float distance_cm)
+{
+    return (int)((360*distance_cm)/(3.14*(float)Diameter));
 }
