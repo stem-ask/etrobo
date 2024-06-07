@@ -504,12 +504,12 @@ void main_task(intptr_t unused)
     // lineTrace();
     // pidLineTraceDistanceActionFaster(-1, 20, 30, 60, 10, KP1, KI1, KD1);
     // ev3_speaker_play_tone(440, 100);
-    // testRun(-1,300, 60);
-    // while(1)
-    // {
-    //     drive(0,0);
-    // }
-    // lineTrace_0(-1,30,200);
+    testRun(-1,300, 60);
+    while(1)
+    {
+        drive(0,0);
+    }
+    lineTrace_0(-1,30,200);
     lineTrace_1();//start
     lineTrace_2();//1/4rad
     lineTrace_3();//doubleloop_small
