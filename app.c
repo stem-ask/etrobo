@@ -367,6 +367,7 @@ int onOffTrace(int forward, int _edge)
 void lineTrace()
 {
     pidLineTraceDistanceActionFaster(-1,10,5950,70,10,KP1,KI1,KD1);
+    pidLineTraceDistanceAction()
     ev3_speaker_play_tone(440, 100);
     pidLineTraceColorActionSlower(-1, 80, 3, 300,30, 8, KP6, KI6, KD6);
     turnDriveDistanceAction(50, 8, 500);
