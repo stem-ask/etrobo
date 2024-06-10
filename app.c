@@ -295,49 +295,49 @@ int onOffTrace(int forward, int _edge)
 //概要　:　ライントレースをする
 //*****************************************************************************
 
-void lineTrace_1()
-{
-    ev3_motor_set_power(arm_motor, 50);
-    ev3_motor_stop(arm_motor, true);
-    pidLineTraceDistanceActionFaster(-1,10,300.92,70,5,KP1,KI1,KD1);
-    pidLineTraceDistanceAction(-1,70,43.61,KP4_1,KI4_1,KD4_1);
-    pidLineTraceDistanceAction(-1,70,157.0,KP1,KI1,KD1);
-    pidLineTraceDistanceAction(-1,70,52.33,KP4_2,KI4_2,KD4_2);
-    pidLineTraceDistanceAction(-1,70,17.44,KP1,KI1,KD1);
-    turnDriveDistanceAction(50,10,5.23);
-    pidLineTraceDistanceAction(1,70,69.78,KP3,KI3,KD3);
-}
+// void lineTrace_1()
+// {
+//     ev3_motor_set_power(arm_motor, 50);
+//     ev3_motor_stop(arm_motor, true);
+//     pidLineTraceDistanceActionFaster(-1,10,300.92,70,5,KP1,KI1,KD1);
+//     pidLineTraceDistanceAction(-1,70,43.61,KP4_1,KI4_1,KD4_1);
+//     pidLineTraceDistanceAction(-1,70,157.0,KP1,KI1,KD1);
+//     pidLineTraceDistanceAction(-1,70,52.33,KP4_2,KI4_2,KD4_2);
+//     pidLineTraceDistanceAction(-1,70,17.44,KP1,KI1,KD1);
+//     turnDriveDistanceAction(50,10,5.23);
+//     pidLineTraceDistanceAction(1,70,69.78,KP3,KI3,KD3);
+// }
 
-void lineTrace_2()//doubleloop_1/4rad
-{   
-    // pidLineTraceColorAction(-1,50,3,0,KP3,KI3,KD3);
-    // pidLineTraceColorAction(1,50,2,0,KP3,KI3,KD3);
-    turnDistanceAction(50,3.49,30);
-    pidLineTraceDistanceAction(-1,70,157.0,KP6,KI6,KD6);
-    pidLineTraceDistanceAction(-1,50,26.17,KP6,KI6,KD6);
-    ev3_speaker_play_tone(240, 100);
-}
+// void lineTrace_2()//doubleloop_1/4rad
+// {   
+//     // pidLineTraceColorAction(-1,50,3,0,KP3,KI3,KD3);
+//     // pidLineTraceColorAction(1,50,2,0,KP3,KI3,KD3);
+//     turnDistanceAction(50,3.49,30);
+//     pidLineTraceDistanceAction(-1,70,157.0,KP6,KI6,KD6);
+//     pidLineTraceDistanceAction(-1,50,26.17,KP6,KI6,KD6);
+//     ev3_speaker_play_tone(240, 100);
+// }
 
-void lineTrace_3()//doubleloop_small
-{
-    // turnDistanceAction(50,80,-30);
-    pidLineTraceColorAction(-1,70,3,0,KP7,KI7,KD7);
-}
+// void lineTrace_3()//doubleloop_small
+// {
+//     // turnDistanceAction(50,80,-30);
+//     pidLineTraceColorAction(-1,70,3,0,KP7,KI7,KD7);
+// }
 
-void lineTrace_4() /*doubleloop_last*/
-{
-    pidLineTraceColorAction(-1,40,2,0,KP7,KI7,KD7);
-    turnDriveDistanceAction(40,10,4.36);
-    pidLineTraceDistanceActionSlower(1,50,126.47,20,60,KP3,KI3,KD3);
-    turnColorActionSlower_toStraighten(50,-3,2,69.78,0,40,25,5);
-}
+// void lineTrace_4() /*doubleloop_last*/
+// {
+//     pidLineTraceColorAction(-1,40,2,0,KP7,KI7,KD7);
+//     turnDriveDistanceAction(40,10,4.36);
+//     pidLineTraceDistanceActionSlower(1,50,126.47,20,60,KP3,KI3,KD3);
+//     turnColorActionSlower_toStraighten(50,-3,2,69.78,0,40,25,5);
+// }
 
-void mission_1()
-{
-    pidLineTraceColorActionSlower(-1,20,5,0,5,10,KP1,KI1,KD1);
-    // turnDriveDistanceAction(50,10,90);
-    turnColorActionSlower_toStraighten(30,-30,2,0.87,0,20,20,60);
-}
+// void mission_1()
+// {
+//     pidLineTraceColorActionSlower(-1,20,5,0,5,10,KP1,KI1,KD1);
+//     // turnDriveDistanceAction(50,10,90);
+//     turnColorActionSlower_toStraighten(30,-30,2,0.87,0,20,20,60);
+// }
 // void mission_2()
 // {
     
@@ -370,14 +370,6 @@ void lineTrace()
     ev3_speaker_play_tone(440, 100);
     pidLineTraceColorActionSlower(-1, 80, 3, 300,30, 8, KP6, KI6, KD6);
     turnDriveDistanceAction(50, 8, 500);
-}
-
-void _lineTrace()
-{
-    pidLineTraceDistanceAction(-1,50,3000,KP1,KI1,KD1);
-    pidLineTraceDistanceAction(-1,50,750,KP4_1,KI4_1,KD4_1);
-    pidLineTraceDistanceAction(-1,50,1900,KP1,KI1,KD1);
-    pidLineTraceDistanceAction(-1,50,750,KP4_1,KI4_1,KD4_1);
 }
 
 /* メインタスク */
@@ -500,26 +492,25 @@ void main_task(intptr_t unused)
     //     printf("   %d:%d:%d   ",rgb_val.r,rgb_val.g,rgb_val.b);
     //     _log("debug");
     // }
-    // _lineTrace();
-    // lineTrace();
+    lineTrace();
     // pidLineTraceDistanceActionFaster(-1, 20, 30, 60, 10, KP1, KI1, KD1);
     // ev3_speaker_play_tone(440, 100);
-    testRun(-1,300, 60);
-    while(1)
-    {
-        drive(0,0);
-    }
-    lineTrace_0(-1,30,200);
-    lineTrace_1();//start
-    lineTrace_2();//1/4rad
-    lineTrace_3();//doubleloop_small
-    lineTrace_4();//doubleloop_last
+    // testRun(-1,300, 60);
+    // while(1)
+    // {
+    //     drive(0,0);
+    // }
+    // lineTrace_0(-1,30,200);
+    // lineTrace_1();//start
+    // lineTrace_2();//1/4rad
+    // lineTrace_3();//doubleloop_small
+    // lineTrace_4();//doubleloop_last
     // lineTrace_5();
     // lineTrace_6();
     // lineTrace_7();
     ev3_speaker_play_tone(140, 100);
     //missionzone
-    mission_1();
+    mission_1(?);
     //     else if (ao_count == 1)
     //     {
     //         if (get_rgb() == 3 && right_wheel[0]-right_wheel[1]>200)
